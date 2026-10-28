@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ระบบทะเบียนสื่อการสอนและนวัตกรรมทางการศึกษา • โรงเรียนสีชมพูศึกษา</title>
   
   <!-- Favicon -->
@@ -49,10 +49,14 @@
     body {
       font-family: 'Prompt', sans-serif;
       background-color: #fff9fb;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
     }
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #fdf2f4;
@@ -65,20 +69,29 @@
       background: #f472b6;
     }
     .glassmorphism {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    /* ซ่อน Scrollbar แถบแท็บแนวนอนบนมือถือเพื่อความสวยงาม */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="text-slate-800 flex flex-col min-h-screen">
+<body class="text-slate-800 flex flex-col min-h-screen selection:bg-pink-200">
 
   <!-- ==================== TOP NAVIGATION ==================== -->
   <header class="sticky top-0 z-40 glassmorphism border-b border-pink-100 shadow-sm transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
       
       <!-- Logo & Title -->
-      <div class="flex items-center gap-3.5 cursor-pointer" onclick="resetFilters()">
-        <div class="relative w-12 h-12 rounded-full ring-2 ring-pink-300 bg-white shadow-sm overflow-hidden flex items-center justify-center shrink-0">
+      <div class="flex items-center gap-2 sm:gap-3.5 cursor-pointer min-w-0" onclick="resetFilters()">
+        <div class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full ring-2 ring-pink-300 bg-white shadow-sm overflow-hidden flex items-center justify-center shrink-0">
           <img 
             src="logo.png" 
             alt="ตราโรงเรียนสีชมพูศึกษา" 
@@ -86,35 +99,36 @@
             onerror="this.onerror=null; this.src='429755.jpg';"
           >
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent leading-none">Education Media</span>
-            <span class="text-xs bg-pink-100 text-pink-700 font-semibold px-2 py-0.5 rounded-full border border-pink-200">ระบบทะเบียนสื่อ</span>
+        <div class="truncate">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent leading-none">Education Media</span>
+            <span class="hidden xs:inline-block text-[10px] sm:text-xs bg-pink-100 text-pink-700 font-semibold px-2 py-0.5 rounded-full border border-pink-200 shrink-0">ระบบทะเบียนสื่อ</span>
           </div>
-          <p class="text-xs text-slate-500 font-medium truncate max-w-xs sm:max-w-md md:max-w-xl mt-1">
-            โรงเรียนสีชมพูศึกษา องค์การบริหารส่วนจังหวัดขอนแก่น
+          <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate mt-0.5 sm:mt-1">
+            โรงเรียนสีชมพูศึกษา อบจ.ขอนแก่น
           </p>
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         <!-- Live Status / GAS Sync -->
-        <button id="syncBtn" onclick="syncWithGoogleSheets(true)" title="ซิงก์ข้อมูลกับ Google Sheets" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium border border-pink-200 bg-pink-50/70 hover:bg-pink-100 text-pink-700 transition">
-          <span id="gasStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="gasStatusText">Google Sheets Live</span>
+        <button id="syncBtn" onclick="syncWithGoogleSheets(true)" title="ซิงก์ข้อมูลกับ Google Sheets" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-medium border border-pink-200 bg-pink-50/70 hover:bg-pink-100 text-pink-700 transition">
+          <span id="gasStatusDot" class="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+          <span id="gasStatusText" class="hidden md:inline">Google Sheets Live</span>
           <i data-lucide="refresh-cw" id="syncIcon" class="w-3.5 h-3.5"></i>
         </button>
 
         <!-- Sheets Config Modal Trigger -->
-        <button onclick="openGasModal()" title="ตั้งค่าเชื่อมต่อชีต" class="p-2.5 rounded-xl border border-pink-200 text-slate-600 hover:text-pink-600 hover:bg-pink-50 transition">
+        <button onclick="openGasModal()" title="ตั้งค่าเชื่อมต่อชีต" class="p-2 sm:p-2.5 rounded-xl border border-pink-200 text-slate-600 hover:text-pink-600 hover:bg-pink-50 transition">
           <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
 
         <!-- Add Media Button -->
-        <button onclick="openAddMediaModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/20 active:scale-95 transition">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <button onclick="openAddMediaModal()" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/20 active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
           <span class="hidden sm:inline">ลงทะเบียนสื่อใหม่</span>
+          <span class="sm:hidden">เพิ่ม</span>
         </button>
       </div>
 
@@ -122,73 +136,73 @@
   </header>
 
   <!-- ==================== MAIN CONTAINER ==================== -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 flex-1 w-full space-y-5 sm:space-y-8">
     
-    <!-- STATS DASHBOARD -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-4">
-        <div class="p-3.5 rounded-xl bg-pink-50 text-pink-600 border border-pink-100">
-          <i data-lucide="folder-git-2" class="w-6 h-6"></i>
+    <!-- STATS DASHBOARD (Adaptive 2 cols on Mobile, 4 cols on Tablet/Desktop) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-3 sm:gap-4">
+        <div class="p-2.5 sm:p-3.5 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 shrink-0">
+          <i data-lucide="folder-git-2" class="w-5 h-5 sm:w-6 sm:h-6"></i>
         </div>
-        <div>
-          <p class="text-xs font-medium text-slate-400">สื่อและนวัตกรรมทั้งหมด</p>
-          <h3 id="statTotal" class="text-2xl font-bold text-slate-800">0</h3>
-        </div>
-      </div>
-
-      <div class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-4">
-        <div class="p-3.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
-          <i data-lucide="layers" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <p class="text-xs font-medium text-slate-400">กลุ่มสาระการเรียนรู้</p>
-          <h3 class="text-2xl font-bold text-slate-800">8</h3>
+        <div class="min-w-0">
+          <p class="text-[11px] sm:text-xs font-medium text-slate-400 truncate">สื่อทั้งหมด</p>
+          <h3 id="statTotal" class="text-lg sm:text-2xl font-bold text-slate-800">0</h3>
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-4">
-        <div class="p-3.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
-          <i data-lucide="eye" class="w-6 h-6"></i>
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-3 sm:gap-4">
+        <div class="p-2.5 sm:p-3.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 shrink-0">
+          <i data-lucide="layers" class="w-5 h-5 sm:w-6 sm:h-6"></i>
         </div>
-        <div>
-          <p class="text-xs font-medium text-slate-400">ยอดเข้าชมสื่อรวม</p>
-          <h3 id="statViews" class="text-2xl font-bold text-slate-800">0</h3>
+        <div class="min-w-0">
+          <p class="text-[11px] sm:text-xs font-medium text-slate-400 truncate">กลุ่มสาระฯ</p>
+          <h3 class="text-lg sm:text-2xl font-bold text-slate-800">8</h3>
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-4">
-        <div class="p-3.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-          <i data-lucide="users" class="w-6 h-6"></i>
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-3 sm:gap-4">
+        <div class="p-2.5 sm:p-3.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+          <i data-lucide="eye" class="w-5 h-5 sm:w-6 sm:h-6"></i>
         </div>
-        <div>
-          <p class="text-xs font-medium text-slate-400">ครูผู้สร้างสรรค์สื่อ</p>
-          <h3 id="statCreators" class="text-2xl font-bold text-slate-800">0</h3>
+        <div class="min-w-0">
+          <p class="text-[11px] sm:text-xs font-medium text-slate-400 truncate">ยอดเข้าชมรวม</p>
+          <h3 id="statViews" class="text-lg sm:text-2xl font-bold text-slate-800">0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-pink-100 shadow-sm flex items-center gap-3 sm:gap-4">
+        <div class="p-2.5 sm:p-3.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shrink-0">
+          <i data-lucide="users" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[11px] sm:text-xs font-medium text-slate-400 truncate">ครูผู้สร้างสื่อ</p>
+          <h3 id="statCreators" class="text-lg sm:text-2xl font-bold text-slate-800">0</h3>
         </div>
       </div>
     </section>
 
     <!-- SEARCH & FILTER TOOLBAR -->
-    <section class="bg-white p-5 rounded-2xl border border-pink-100 shadow-sm space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+    <section class="bg-white p-4 sm:p-5 rounded-2xl border border-pink-100 shadow-sm space-y-3.5 sm:space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3.5">
         
         <!-- Search Input -->
-        <div class="relative md:col-span-6">
+        <div class="relative sm:col-span-2 lg:col-span-6">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
           <input 
             type="text" 
             id="searchInput" 
             oninput="handleSearch()"
-            placeholder="ค้นหาชื่อสื่อ, ชื่อรายวิชา, ชื่อครูผู้สอน หรือรหัสสื่อ..." 
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition bg-slate-50/50 hover:bg-white"
+            placeholder="ค้นหาชื่อสื่อ, รายวิชา, ชื่อครู หรือรหัส..." 
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-slate-50/50 hover:bg-white transition"
           >
         </div>
 
         <!-- Grade Filter -->
-        <div class="md:col-span-3">
+        <div class="lg:col-span-3">
           <select 
             id="gradeFilter" 
             onchange="handleFilterChange()"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
           >
             <option value="ALL">เลือกระดับชั้นทั้งหมด</option>
             <option value="ม.1">มัธยมศึกษาปีที่ 1</option>
@@ -202,11 +216,11 @@
         </div>
 
         <!-- Media Type Filter -->
-        <div class="md:col-span-3">
+        <div class="lg:col-span-3">
           <select 
             id="typeFilter" 
             onchange="handleFilterChange()"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 bg-white"
           >
             <option value="ALL">เลือกประเภทสื่อทั้งหมด</option>
             <option value="video">วิดีโอ (YouTube / Drive)</option>
@@ -218,13 +232,16 @@
 
       </div>
 
-      <!-- SUBJECT GROUP TABS (8 กลุ่มสาระ) -->
+      <!-- SUBJECT GROUP TABS (Horizontal Scrollable for Touch Devices) -->
       <div class="pt-2 border-t border-slate-100">
-        <p class="text-xs font-semibold text-slate-400 mb-2.5 flex items-center gap-1.5">
-          <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-pink-500"></i>
-          เลือกตามกลุ่มสาระการเรียนรู้:
-        </p>
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar text-xs" id="subjectFilterContainer">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-pink-500"></i>
+            กลุ่มสาระการเรียนรู้:
+          </p>
+          <span class="text-[10px] text-slate-400 sm:hidden">เลื่อนซ้าย-ขวาเพื่อเลือก</span>
+        </div>
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 no-scrollbar sm:custom-scrollbar text-xs" id="subjectFilterContainer">
           <!-- Buttons rendered dynamically via JS -->
         </div>
       </div>
@@ -232,27 +249,27 @@
 
     <!-- CONTENT HEADER & SUMMARY -->
     <div class="flex items-center justify-between px-1">
-      <div class="flex items-center gap-2">
-        <h2 id="currentCategoryTitle" class="text-lg font-bold text-slate-800">สื่อการเรียนรู้ทั้งหมด</h2>
-        <span id="filteredCountBadge" class="text-xs bg-pink-100 text-pink-700 font-semibold px-2.5 py-0.5 rounded-full">0 รายการ</span>
+      <div class="flex items-center gap-2 min-w-0">
+        <h2 id="currentCategoryTitle" class="text-base sm:text-lg font-bold text-slate-800 truncate">สื่อการเรียนรู้ทั้งหมด</h2>
+        <span id="filteredCountBadge" class="text-[11px] sm:text-xs bg-pink-100 text-pink-700 font-semibold px-2 sm:px-2.5 py-0.5 rounded-full shrink-0">0 รายการ</span>
       </div>
-      <button onclick="resetFilters()" class="text-xs text-pink-600 hover:text-pink-700 font-medium hover:underline flex items-center gap-1">
+      <button onclick="resetFilters()" class="text-xs text-pink-600 hover:text-pink-700 font-medium hover:underline flex items-center gap-1 shrink-0">
         <i data-lucide="rotate-ccw" class="w-3 h-3"></i> ล้างการค้นหา
       </button>
     </div>
 
-    <!-- MEDIA GRID -->
-    <section id="mediaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- RESPONSIVE MEDIA GRID: 1 col on mobile, 2 cols on landscape/small tablet, 3-4 cols on desktop -->
+    <section id="mediaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       <!-- Media Cards injected by JS -->
     </section>
 
     <!-- EMPTY STATE -->
-    <div id="emptyState" class="hidden py-16 text-center bg-white rounded-3xl border border-dashed border-pink-200 p-8 space-y-4">
-      <div class="w-16 h-16 mx-auto bg-pink-50 text-pink-500 rounded-full flex items-center justify-center">
-        <i data-lucide="search-x" class="w-8 h-8"></i>
+    <div id="emptyState" class="hidden py-12 sm:py-16 text-center bg-white rounded-3xl border border-dashed border-pink-200 p-6 sm:p-8 space-y-3 sm:space-y-4">
+      <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-pink-50 text-pink-500 rounded-full flex items-center justify-center">
+        <i data-lucide="search-x" class="w-7 h-7 sm:w-8 sm:h-8"></i>
       </div>
       <div>
-        <h4 class="text-base font-semibold text-slate-700">ไม่พบข้อมูลสื่อการสอนที่ค้นหา</h4>
+        <h4 class="text-sm sm:text-base font-semibold text-slate-700">ไม่พบข้อมูลสื่อการสอนที่ค้นหา</h4>
         <p class="text-xs text-slate-400 mt-1">ลองเปลี่ยนคำค้นหา หรือเลือกกลุ่มสาระและระดับชั้นอื่น</p>
       </div>
       <button onclick="resetFilters()" class="px-4 py-2 text-xs font-medium text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-xl transition">
@@ -263,70 +280,73 @@
   </main>
 
   <!-- ==================== FOOTER ==================== -->
-  <footer class="bg-white border-t border-pink-100 mt-auto py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
-      <div class="flex items-center justify-center gap-2 text-sm font-semibold text-slate-700">
+  <footer class="bg-white border-t border-pink-100 mt-auto py-6 sm:py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1.5 sm:space-y-2">
+      <div class="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700">
         <span class="w-2 h-2 rounded-full bg-pink-500"></span>
         ระบบทะเบียนสื่อการสอนและนวัตกรรมทางการศึกษา
       </div>
-      <p class="text-xs text-slate-500">
+      <p class="text-[11px] sm:text-xs text-slate-500">
         โรงเรียนสีชมพูศึกษา องค์การบริหารส่วนจังหวัดขอนแก่น
       </p>
-      <p class="text-[11px] text-slate-400">
+      <p class="text-[10px] sm:text-[11px] text-slate-400">
         เชื่อมต่อระบบจัดเก็บข้อมูลแบบกระจายศูนย์ผ่าน Google Sheets และ Google Drive
       </p>
     </div>
   </footer>
 
-  <!-- ==================== PREVIEW MODAL ==================== -->
-  <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5">
-    <div class="bg-white w-full max-w-4xl max-h-[92vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+  <!-- ==================== PREVIEW MODAL (Fully Adaptive for Mobile & Tablet) ==================== -->
+  <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4 md:p-6">
+    <div class="bg-white w-full max-w-4xl max-h-[96vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
       
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-4 bg-pink-50/40">
-        <div>
-          <div class="flex flex-wrap items-center gap-2 mb-1.5">
-            <span id="modalCodeBadge" class="text-xs font-bold text-pink-700 bg-pink-100 px-2 py-0.5 rounded-md">MED-2026-000</span>
-            <span id="modalSubjectBadge" class="text-xs font-medium text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md">กลุ่มสาระฯ</span>
-            <span id="modalCourseBadge" class="text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">วิชา: -</span>
-            <span id="modalGradeBadge" class="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">ระดับชั้น</span>
+      <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-pink-50/40">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-1.5 mb-1">
+            <span id="modalCodeBadge" class="text-[10px] sm:text-xs font-bold text-pink-700 bg-pink-100 px-2 py-0.5 rounded-md">MED-2026-000</span>
+            <span id="modalSubjectBadge" class="text-[10px] sm:text-xs font-medium text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md truncate max-w-[140px] sm:max-w-none">กลุ่มสาระฯ</span>
+            <span id="modalCourseBadge" class="text-[10px] sm:text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md truncate max-w-[140px] sm:max-w-none">วิชา: -</span>
+            <span id="modalGradeBadge" class="text-[10px] sm:text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">ระดับชั้น</span>
           </div>
-          <h3 id="modalTitle" class="text-lg font-bold text-slate-800 line-clamp-1">ชื่อสื่อการเรียนรู้</h3>
+          <h3 id="modalTitle" class="text-sm sm:text-lg font-bold text-slate-800 line-clamp-1">ชื่อสื่อการเรียนรู้</h3>
         </div>
-        <button onclick="closePreviewModal()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition shrink-0">
+        <button onclick="closePreviewModal()" class="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition shrink-0">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <!-- Modal Body (Preview Canvas) -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-slate-900 flex flex-col items-center justify-center min-h-[340px]">
+      <div class="flex-1 overflow-y-auto p-2 sm:p-6 custom-scrollbar bg-slate-900 flex flex-col items-center justify-center min-h-[260px] sm:min-h-[380px]">
         <div id="modalPreviewContainer" class="w-full h-full flex flex-col items-center justify-center">
           <!-- Dynamic Preview Element -->
         </div>
       </div>
 
       <!-- Modal Footer (Details & Actions) -->
-      <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2 text-xs text-slate-500">
-            <i data-lucide="user" class="w-3.5 h-3.5 text-pink-500"></i>
-            <span id="modalCreator" class="font-medium text-slate-700">ชื่อครูผู้จัดทำ</span>
+      <div class="px-4 sm:px-6 py-3 sm:py-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div class="w-full sm:w-auto min-w-0">
+          <div class="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-500">
+            <span class="inline-flex items-center gap-1 font-medium text-slate-700 truncate max-w-[150px]">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-pink-500 shrink-0"></i>
+              <span id="modalCreator">ครูผู้จัดทำ</span>
+            </span>
             <span>•</span>
-            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-            <span id="modalDate">2026-10-28</span>
+            <span id="modalDate" class="text-slate-400">2026-10-28</span>
             <span>•</span>
-            <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-500"></i>
-            <span id="modalViews" class="font-bold text-amber-600">0 วิว</span>
+            <span class="inline-flex items-center gap-1 font-bold text-amber-600">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-500 shrink-0"></i>
+              <span id="modalViews">0 วิว</span>
+            </span>
           </div>
           <p id="modalDescription" class="text-xs text-slate-500 mt-1 line-clamp-2">คำอธิบายสื่อ</p>
         </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-          <button id="modalEditBtn" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition inline-flex items-center gap-1.5">
+        <div class="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end pt-1 sm:pt-0">
+          <button id="modalEditBtn" class="flex-1 sm:flex-none justify-center px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition inline-flex items-center gap-1.5">
             <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
-            แก้ไขข้อมูล
+            แก้ไข
           </button>
-          <a id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 rounded-xl transition inline-flex items-center gap-1.5 shadow-sm">
+          <a id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none justify-center px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 rounded-xl transition inline-flex items-center gap-1.5 shadow-sm">
             <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             เปิดต้นฉบับ
           </a>
@@ -337,17 +357,17 @@
   </div>
 
   <!-- ==================== ADD / EDIT MEDIA MODAL ==================== -->
-  <div id="addMediaModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5">
-    <div class="bg-white w-full max-w-2xl max-h-[92vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+  <div id="addMediaModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-2.5 sm:p-5">
+    <div class="bg-white w-full max-w-2xl max-h-[95vh] sm:max-h-[92vh] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
       
-      <div class="px-6 py-4 border-b border-pink-100 bg-pink-50/50 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div id="modalFormIcon" class="p-2 rounded-xl bg-pink-100 text-pink-600">
+      <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-pink-100 bg-pink-50/50 flex items-center justify-between">
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          <div id="modalFormIcon" class="p-1.5 sm:p-2 rounded-xl bg-pink-100 text-pink-600">
             <i data-lucide="file-plus-2" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 id="formModalTitle" class="text-base font-bold text-slate-800">ลงทะเบียนสื่อและนวัตกรรมใหม่</h3>
-            <p class="text-xs text-slate-500">บันทึกข้อมูลเพื่อจัดทำทะเบียนสื่อกลางของโรงเรียน</p>
+            <h3 id="formModalTitle" class="text-sm sm:text-base font-bold text-slate-800">ลงทะเบียนสื่อและนวัตกรรมใหม่</h3>
+            <p class="text-[11px] sm:text-xs text-slate-500">บันทึกข้อมูลเพื่อจัดทำทะเบียนสื่อกลางของโรงเรียน</p>
           </div>
         </div>
         <button onclick="closeAddMediaModal()" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition">
@@ -355,29 +375,29 @@
         </button>
       </div>
 
-      <form id="mediaForm" onsubmit="handleSaveMedia(event)" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar text-sm">
+      <form id="mediaForm" onsubmit="handleSaveMedia(event)" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3.5 sm:space-y-4 custom-scrollbar text-xs sm:text-sm">
         <input type="hidden" id="editItemIndex" value="-1">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสสื่อ (อัตโนมัติ)</label>
-            <input type="text" id="formId" readonly class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 font-mono text-xs focus:outline-none">
+            <input type="text" id="formId" readonly class="w-full px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 font-mono text-xs focus:outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อคุณครูผู้สร้างสื่อ <span class="text-rose-500">*</span></label>
-            <input type="text" id="formCreator" required placeholder="เช่น นายสมคิด สถิตย์คง" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-500 focus:outline-none">
+            <input type="text" id="formCreator" required placeholder="เช่น นายสมคิด สถิตย์คง" class="w-full px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-500 focus:outline-none">
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อสื่อ / นวัตกรรมการเรียนรู้ <span class="text-rose-500">*</span></label>
-          <input type="text" id="formTitle" required placeholder="เช่น วงจรไฟฟ้าเบื้องต้นและบอร์ดจำลองสมองกล" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-500 focus:outline-none">
+          <input type="text" id="formTitle" required placeholder="เช่น วงจรไฟฟ้าเบื้องต้นและบอร์ดจำลองสมองกล" class="w-full px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-pink-500 focus:outline-none">
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">กลุ่มสาระการเรียนรู้ <span class="text-rose-500">*</span></label>
-            <select id="formSubject" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
+            <select id="formSubject" required class="w-full px-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
               <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
               <option value="คณิตศาสตร์">คณิตศาสตร์</option>
               <option value="ภาษาไทย">ภาษาไทย</option>
@@ -392,12 +412,12 @@
 
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อรายวิชา <span class="text-rose-500">*</span></label>
-            <input type="text" id="formCourse" required placeholder="เช่น วิทยาการคำนวณ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none">
+            <input type="text" id="formCourse" required placeholder="เช่น วิทยาการคำนวณ" class="w-full px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none">
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">ระดับชั้น <span class="text-rose-500">*</span></label>
-            <select id="formGrade" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
+            <select id="formGrade" required class="w-full px-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
               <option value="ม.1">มัธยมศึกษาปีที่ 1</option>
               <option value="ม.2">มัธยมศึกษาปีที่ 2</option>
               <option value="ม.3">มัธยมศึกษาปีที่ 3</option>
@@ -409,10 +429,10 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">ประเภทสื่อ <span class="text-rose-500">*</span></label>
-            <select id="formType" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
+            <select id="formType" required class="w-full px-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 bg-white">
               <option value="video">วิดีโอ (YouTube/Drive)</option>
               <option value="pdf">เอกสาร / ใบความรู้ (PDF)</option>
               <option value="slide">สไลด์บรรยาย (Slide/Canva)</option>
@@ -421,7 +441,7 @@
           </div>
           <div class="sm:col-span-2">
             <label class="block text-xs font-semibold text-slate-600 mb-1">URL พรีวิวสื่อ หรือ ลิงก์ไฟล์ <span class="text-rose-500">*</span></label>
-            <input type="url" id="formUrl" required placeholder="https://youtube.com/... หรือ ลิงก์ Drive" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none">
+            <input type="url" id="formUrl" required placeholder="https://youtube.com/... หรือ ลิงก์ Drive" class="w-full px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none">
           </div>
         </div>
 
@@ -434,7 +454,7 @@
         <input type="hidden" id="formViews" value="0">
         <input type="hidden" id="formDate" value="">
 
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
+        <div class="pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-end gap-2 sm:gap-2.5">
           <button type="button" onclick="closeAddMediaModal()" class="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition">
             ยกเลิก
           </button>
@@ -449,12 +469,12 @@
   </div>
 
   <!-- ==================== GOOGLE SHEETS SETTINGS MODAL ==================== -->
-  <div id="gasModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-4">
+  <div id="gasModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-pink-100 pb-3">
         <div class="flex items-center gap-2 text-pink-600">
           <i data-lucide="sheet" class="w-5 h-5"></i>
-          <h3 class="text-base font-bold text-slate-800">ตั้งค่า Google Sheets API</h3>
+          <h3 class="text-sm sm:text-base font-bold text-slate-800">ตั้งค่า Google Sheets API</h3>
         </div>
         <button onclick="closeGasModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-full">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -483,9 +503,9 @@
   </div>
 
   <!-- ==================== TOAST NOTIFICATION ==================== -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-medium translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    <i data-lucide="check-circle" id="toastIcon" class="w-4 h-4 text-emerald-400"></i>
-    <span id="toastMsg">บันทึกข้อมูลเรียบร้อยแล้ว</span>
+  <div id="toast" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 bg-slate-800/95 backdrop-blur text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-medium translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-sm">
+    <i data-lucide="check-circle" id="toastIcon" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+    <span id="toastMsg" class="truncate">บันทึกข้อมูลเรียบร้อยแล้ว</span>
   </div>
 
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
@@ -549,7 +569,6 @@
       }
     ];
 
-    // สถานะของแอพ
     let mediaList = [];
     let currentSubject = 'ALL';
     let currentGrade = 'ALL';
@@ -573,14 +592,13 @@
       if (input) input.value = url;
     }
 
-    // สร้างปุ่มกรองกลุ่มสาระฯ
     function initSubjectTabs() {
       const container = document.getElementById('subjectFilterContainer');
       container.innerHTML = SUBJECT_GROUPS.map(sub => `
         <button 
           onclick="selectSubject('${sub.id}')" 
           id="tab-${sub.id}"
-          class="subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 ${
+          class="subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 touch-manipulation ${
             sub.id === 'ALL' 
             ? 'bg-pink-600 text-white shadow-sm shadow-pink-500/20' 
             : 'bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600'
@@ -623,18 +641,18 @@
             views: Number(item.views) || 0
           }));
           localStorage.setItem('school_media_local_cache', JSON.stringify(mediaList));
-          if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+          if (dot) dot.className = "w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0";
           if (text) text.textContent = "Google Sheets Live";
           if (showToastMessage) showToast("ซิงก์ข้อมูลจาก Google Sheets สำเร็จ");
         } else {
           loadFromLocalFallback();
-          if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+          if (dot) dot.className = "w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-amber-500 shrink-0";
           if (text) text.textContent = "Local Cache";
         }
       } catch (err) {
         console.warn("GAS Fetch fallback:", err);
         loadFromLocalFallback();
-        if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+        if (dot) dot.className = "w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-rose-500 shrink-0";
         if (text) text.textContent = "Offline Mode";
         if (showToastMessage) showToast("ไม่สามารถเชื่อมต่อชีตได้ ใช้ข้อมูลในเครื่อง");
       } finally {
@@ -653,7 +671,6 @@
       }
     }
 
-    // ส่งข้อมูลไปยัง Google Apps Script (ส่งแบบ text/plain หลีกเลี่ยง CORS Issue)
     async function sendToGasBackend(payload) {
       const gasUrl = getGasUrl();
       try {
@@ -697,12 +714,12 @@
       }
 
       emptyState.classList.add('hidden');
-      grid.innerHTML = filtered.map((item, index) => {
+      grid.innerHTML = filtered.map((item) => {
         const thumbUrl = getThumbnailForMedia(item);
         const typeBadge = getTypeBadge(item.type);
 
         return `
-          <div class="bg-white rounded-3xl border border-pink-100 shadow-sm hover:shadow-xl hover:border-pink-300 transition-all duration-300 flex flex-col overflow-hidden group">
+          <div class="bg-white rounded-2xl sm:rounded-3xl border border-pink-100 shadow-sm hover:shadow-xl hover:border-pink-300 transition-all duration-300 flex flex-col overflow-hidden group">
             
             <!-- Thumbnail & Cover -->
             <div class="relative w-full aspect-video bg-slate-900 overflow-hidden cursor-pointer" onclick="openPreviewModal('${item.id}')">
@@ -715,13 +732,13 @@
               
               <!-- Quick Play Overlay -->
               <div class="absolute inset-0 bg-slate-900/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <span class="w-12 h-12 rounded-full bg-pink-600/90 text-white flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-all">
+                <span class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-pink-600/90 text-white flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-all">
                   <i data-lucide="play" class="w-5 h-5 fill-white ml-0.5"></i>
                 </span>
               </div>
 
               <!-- Top Left Badges -->
-              <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+              <div class="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 flex flex-wrap gap-1 sm:gap-1.5">
                 <span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-white/95 text-slate-700 shadow-sm backdrop-blur">
                   ${item.grade}
                 </span>
@@ -729,60 +746,60 @@
               </div>
 
               <!-- Top Right Views Counter Badge -->
-              <div class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm border border-slate-700/50">
+              <div class="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 bg-slate-900/80 backdrop-blur-md text-amber-300 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm border border-slate-700/50">
                 <i data-lucide="eye" class="w-3 h-3 text-amber-400"></i>
                 <span>${item.views || 0}</span>
               </div>
             </div>
 
             <!-- Content Area -->
-            <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+            <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3">
               <div>
-                <div class="flex items-center justify-between text-[11px] font-medium text-pink-600 mb-1.5">
-                  <span class="truncate max-w-[150px]">${item.subject}</span>
-                  <span class="font-mono text-slate-400">${item.id}</span>
+                <div class="flex items-center justify-between text-[11px] font-medium text-pink-600 mb-1">
+                  <span class="truncate max-w-[140px] sm:max-w-[170px]">${item.subject}</span>
+                  <span class="font-mono text-slate-400 text-[10px] sm:text-[11px]">${item.id}</span>
                 </div>
 
                 <!-- Course Name Badge -->
                 <div class="mb-1.5">
-                  <span class="inline-block text-[11px] font-semibold text-rose-700 bg-rose-50 border border-rose-200/80 px-2 py-0.5 rounded-md truncate max-w-full">
+                  <span class="inline-block text-[10px] sm:text-[11px] font-semibold text-rose-700 bg-rose-50 border border-rose-200/80 px-2 py-0.5 rounded-md truncate max-w-full">
                     วิชา: ${item.course || '-'}
                   </span>
                 </div>
 
                 <h3 
                   onclick="openPreviewModal('${item.id}')"
-                  class="font-bold text-slate-800 text-sm hover:text-pink-600 transition cursor-pointer line-clamp-2 leading-snug" 
+                  class="font-bold text-slate-800 text-xs sm:text-sm hover:text-pink-600 transition cursor-pointer line-clamp-2 leading-snug" 
                   title="${item.title}"
                 >
                   ${item.title}
                 </h3>
 
-                <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                <p class="text-[11px] sm:text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                   ${item.description || 'ไม่มีคำอธิบายเพิ่มเติม'}
                 </p>
               </div>
 
               <!-- Card Footer -->
-              <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-                <div class="flex items-center gap-1.5 truncate max-w-[130px]" title="ผู้สร้าง: ${item.creator}">
+              <div class="pt-2.5 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <div class="flex items-center gap-1.5 truncate max-w-[120px] sm:max-w-[140px]" title="ผู้สร้าง: ${item.creator}">
                   <i data-lucide="user" class="w-3.5 h-3.5 text-pink-500 shrink-0"></i>
-                  <span class="truncate">${item.creator}</span>
+                  <span class="truncate text-[11px] sm:text-xs">${item.creator}</span>
                 </div>
 
                 <!-- Actions: Edit & Delete -->
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1 shrink-0">
                   <button 
                     onclick="event.stopPropagation(); editMedia('${item.id}')" 
                     title="แก้ไขสื่อ"
-                    class="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                    class="p-2 sm:p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition touch-manipulation"
                   >
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                   </button>
                   <button 
                     onclick="event.stopPropagation(); deleteMedia('${item.id}')" 
                     title="ลบสื่อ"
-                    class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    class="p-2 sm:p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition touch-manipulation"
                   >
                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                   </button>
@@ -801,13 +818,13 @@
     function getTypeBadge(type) {
       switch(type) {
         case 'video':
-          return `<span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-rose-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="video" class="w-3 h-3"></i> วิดีโอ</span>`;
+          return `<span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-semibold bg-rose-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="video" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> วิดีโอ</span>`;
         case 'pdf':
-          return `<span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-red-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> PDF</span>`;
+          return `<span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-semibold bg-red-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="file-text" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> PDF</span>`;
         case 'slide':
-          return `<span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-amber-500 text-white shadow-sm flex items-center gap-1"><i data-lucide="presentation" class="w-3 h-3"></i> สไลด์</span>`;
+          return `<span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-semibold bg-amber-500 text-white shadow-sm flex items-center gap-1"><i data-lucide="presentation" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> สไลด์</span>`;
         default:
-          return `<span class="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-indigo-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> เว็บ</span>`;
+          return `<span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-semibold bg-indigo-600 text-white shadow-sm flex items-center gap-1"><i data-lucide="globe" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> เว็บ</span>`;
       }
     }
 
@@ -870,22 +887,22 @@
         const ytid = extractYouTubeId(item.url);
         if (ytid) {
           container.innerHTML = `
-            <div class="relative w-full max-w-2xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-700 bg-black group">
+            <div class="relative w-full max-w-2xl aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-slate-700 bg-black group">
               <img src="https://img.youtube.com/vi/${ytid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${ytid}/hqdefault.jpg'" class="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-between p-6">
-                <span class="self-start px-3 py-1 rounded-full text-xs font-semibold bg-rose-600 text-white flex items-center gap-1.5 shadow">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-between p-4 sm:p-6">
+                <span class="self-start px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-rose-600 text-white flex items-center gap-1.5 shadow">
                   <i data-lucide="youtube" class="w-3.5 h-3.5"></i> YouTube Video
                 </span>
-                <div class="text-center space-y-3">
-                  <a href="https://www.youtube.com/watch?v=${ytid}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-600 hover:bg-rose-500 text-white shadow-2xl hover:scale-110 transition-transform">
-                    <i data-lucide="play" class="w-8 h-8 fill-white ml-1"></i>
+                <div class="text-center space-y-2 sm:space-y-3">
+                  <a href="https://www.youtube.com/watch?v=${ytid}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-rose-600 hover:bg-rose-500 text-white shadow-2xl hover:scale-110 active:scale-95 transition-transform touch-manipulation">
+                    <i data-lucide="play" class="w-6 h-6 sm:w-8 sm:h-8 fill-white ml-0.5 sm:ml-1"></i>
                   </a>
-                  <p class="text-xs text-slate-300 font-medium">คลิกเพื่อเปิดเล่นวิดีโอบน YouTube โดยตรงแบบเต็มจอ</p>
+                  <p class="text-[11px] sm:text-xs text-slate-300 font-medium">แตะเพื่อเปิดเล่นบน YouTube เต็มจอ</p>
                 </div>
-                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400">
                   <span>ID: ${ytid}</span>
                   <a href="https://www.youtube.com/watch?v=${ytid}" target="_blank" class="text-rose-400 hover:underline flex items-center gap-1">
-                    เปิดในหน้าต่างใหม่ <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                    เปิดในแอป <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
                   </a>
                 </div>
               </div>
@@ -893,11 +910,11 @@
           `;
         } else {
           container.innerHTML = `
-            <div class="text-center text-slate-400 p-8 space-y-4">
-              <i data-lucide="video" class="w-12 h-12 mx-auto text-pink-500"></i>
-              <p class="text-sm">วิดีโอนี้อยู่ในแหล่งจัดเก็บภายนอก (Google Drive / ไฟล์ตรง)</p>
-              <a href="${item.url}" target="_blank" class="px-5 py-2.5 rounded-xl bg-pink-600 text-white text-xs font-semibold inline-flex items-center gap-2">
-                <i data-lucide="external-link" class="w-4 h-4"></i> เปิดดูไฟล์วิดีโอ
+            <div class="text-center text-slate-400 p-6 space-y-3">
+              <i data-lucide="video" class="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-pink-500"></i>
+              <p class="text-xs sm:text-sm">วิดีโอนี้อยู่ในแหล่งจัดเก็บภายนอก</p>
+              <a href="${item.url}" target="_blank" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-pink-600 text-white text-xs font-semibold inline-flex items-center gap-2">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i> เปิดดูไฟล์วิดีโอ
               </a>
             </div>
           `;
@@ -908,13 +925,13 @@
           pdfEmbed = pdfEmbed.replace(/\/view.*$/, '/preview');
         }
         container.innerHTML = `
-          <div class="w-full h-[60vh] rounded-2xl overflow-hidden bg-white shadow-inner border border-slate-700">
+          <div class="w-full h-[50vh] sm:h-[60vh] rounded-xl overflow-hidden bg-white shadow-inner border border-slate-700">
             <iframe src="${pdfEmbed}" class="w-full h-full border-0" allow="autoplay"></iframe>
           </div>
         `;
       } else {
         container.innerHTML = `
-          <div class="w-full h-[60vh] rounded-2xl overflow-hidden bg-white shadow-inner border border-slate-700">
+          <div class="w-full h-[50vh] sm:h-[60vh] rounded-xl overflow-hidden bg-white shadow-inner border border-slate-700">
             <iframe src="${item.url}" class="w-full h-full border-0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
           </div>
         `;
@@ -955,7 +972,7 @@
       if (!item) return;
 
       document.getElementById('editItemIndex').value = id;
-      document.getElementById('formModalTitle').textContent = `แก้ไขข้อมูลสื่อ: ${item.id}`;
+      document.getElementById('formModalTitle').textContent = `แก้ไขสื่อ: ${item.id}`;
       document.getElementById('formSubmitBtn').innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> อัปเดตข้อมูล`;
 
       document.getElementById('formId').value = item.id;
@@ -1029,16 +1046,16 @@
     function selectSubject(subId) {
       currentSubject = subId;
       document.querySelectorAll('.subject-tab').forEach(btn => {
-        btn.className = "subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600";
+        btn.className = "subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 touch-manipulation bg-slate-100 text-slate-600 hover:bg-pink-50 hover:text-pink-600";
       });
       const activeBtn = document.getElementById(`tab-${subId}`);
       if (activeBtn) {
-        activeBtn.className = "subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 bg-pink-600 text-white shadow-sm shadow-pink-500/20";
+        activeBtn.className = "subject-tab px-3 py-1.5 rounded-xl font-medium shrink-0 transition flex items-center gap-1.5 touch-manipulation bg-pink-600 text-white shadow-sm shadow-pink-500/20";
       }
 
       const currentSubObj = SUBJECT_GROUPS.find(s => s.id === subId);
       document.getElementById('currentCategoryTitle').textContent = 
-        subId === 'ALL' ? 'สื่อการเรียนรู้ทั้งหมด' : `กลุ่มสาระการเรียนรู้: ${currentSubObj ? currentSubObj.name : subId}`;
+        subId === 'ALL' ? 'สื่อการเรียนรู้ทั้งหมด' : `กลุ่มสาระฯ: ${currentSubObj ? currentSubObj.name : subId}`;
 
       renderMediaGrid();
     }
@@ -1111,13 +1128,13 @@
       const toastMsg = document.getElementById('toastMsg');
       toastMsg.textContent = msg;
       
-      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.remove('translate-y-24', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
 
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
         toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-24', 'opacity-0');
       }, 3000);
     }
   </script>
