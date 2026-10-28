@@ -121,8 +121,8 @@
           <i data-lucide="refresh-cw" id="syncIcon" class="w-3.5 h-3.5"></i>
         </button>
 
-        <!-- Settings Button -->
-        <button onclick="openGasModal()" title="ตั้งค่าเชื่อมต่อชีต" class="p-2 sm:p-2.5 rounded-xl border border-pink-200 text-slate-600 hover:bg-pink-50 active:scale-95 transition touch-target">
+        <!-- Settings Button (ซ่อนไว้เพื่อความปลอดภัย ป้องกันผู้ใช้แก้ไข API) -->
+        <button onclick="openGasModal()" title="ตั้งค่าเชื่อมต่อชีต" class="hidden p-2 sm:p-2.5 rounded-xl border border-pink-200 text-slate-600 hover:bg-pink-50 active:scale-95 transition touch-target">
           <i data-lucide="settings" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
         </button>
 
@@ -139,7 +139,7 @@
   <!-- ==================== MAIN CONTAINER ==================== -->
   <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-8 flex-1 w-full space-y-4 sm:space-y-8">
     
-    <!-- STATS DASHBOARD (Adaptive 2 cols on Mobile, 4 cols on Tablet/Desktop) -->
+    <!-- STATS DASHBOARD -->
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
       <div class="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-pink-100 shadow-sm flex items-center gap-2.5 sm:gap-3.5">
         <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-pink-50 text-pink-600 shrink-0">
@@ -157,7 +157,7 @@
         </div>
         <div class="min-w-0">
           <p class="text-[10px] sm:text-xs text-slate-400 truncate">กลุ่มสาระฯ</p>
-          <h3 class="text-base sm:text-xl font-bold text-slate-800">8</h3>
+          <h3 id="statSubjects" class="text-base sm:text-xl font-bold text-slate-800">8</h3>
         </div>
       </div>
 
@@ -233,7 +233,7 @@
 
       </div>
 
-      <!-- SUBJECT GROUP TABS (Scrollable for Touch Devices) -->
+      <!-- SUBJECT GROUP TABS -->
       <div class="pt-2 border-t border-slate-100">
         <div class="flex items-center justify-between mb-1.5">
           <p class="text-[11px] sm:text-xs font-semibold text-slate-400 flex items-center gap-1.5">
@@ -259,7 +259,7 @@
       </button>
     </div>
 
-    <!-- RESPONSIVE MEDIA GRID: 1 col on mobile, 2 cols on landscape/small tablet, 3-4 cols on desktop -->
+    <!-- RESPONSIVE MEDIA GRID -->
     <section id="mediaGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-6">
       <!-- Media Cards injected by JS -->
     </section>
@@ -287,13 +287,16 @@
         <span class="w-2 h-2 rounded-full bg-pink-500"></span>
         ระบบทะเบียนสื่อการสอนและนวัตกรรมทางการศึกษา
       </div>
-      <p class="text-[10px] sm:text-xs text-slate-500">
-        โรงเรียนสีชมพูศึกษา องค์การบริหารส่วนจังหวัดขอนแก่น
+      <p class="text-[11px] sm:text-xs text-slate-600 font-medium">
+        พัฒนาโดย นายนพคุณ สืบเลย และนายปัญญา คำสะไมล์ โรงเรียนสีชมพูศึกษา
+      </p>
+      <p class="text-[10px] text-slate-400">
+        สังกัดองค์การบริหารส่วนจังหวัดขอนแก่น
       </p>
     </div>
   </footer>
 
-  <!-- ==================== PREVIEW MODAL (Full Sheet on Smartphone) ==================== -->
+  <!-- ==================== PREVIEW MODAL ==================== -->
   <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white w-full sm:max-w-4xl h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
       
@@ -443,40 +446,6 @@
     </div>
   </div>
 
-  <!-- ==================== GOOGLE SHEETS SETTINGS MODAL ==================== -->
-  <div id="gasModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
-    <div class="bg-white w-full max-w-lg rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 space-y-3">
-      <div class="flex items-center justify-between border-b border-pink-100 pb-2">
-        <div class="flex items-center gap-2 text-pink-600">
-          <i data-lucide="sheet" class="w-5 h-5"></i>
-          <h3 class="text-sm sm:text-base font-bold text-slate-800">ตั้งค่า Google Sheets API</h3>
-        </div>
-        <button onclick="closeGasModal()" class="text-slate-400 p-1 rounded-full touch-target">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-500">
-        เชื่อมต่อ Google Apps Script Web App ของโรงเรียน
-      </p>
-
-      <div>
-        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Web App Executable URL:</label>
-        <input type="text" id="gasUrlInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono">
-      </div>
-
-      <div class="flex items-center justify-between pt-2">
-        <button onclick="resetGasUrl()" class="text-[11px] text-slate-400 hover:text-rose-600 underline touch-target">
-          คืนค่าเริ่มต้น
-        </button>
-        <div class="flex gap-2">
-          <button onclick="closeGasModal()" class="px-3 py-1.5 text-xs text-slate-500 rounded-xl touch-target">ปิด</button>
-          <button onclick="saveGasSettings()" class="px-3.5 py-1.5 text-xs font-semibold text-white bg-pink-600 rounded-xl touch-target">บันทึก</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ==================== TOAST NOTIFICATION ==================== -->
   <div id="toast" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 bg-slate-800/95 backdrop-blur text-white px-3.5 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-medium translate-y-24 opacity-0 transition-all duration-300 pointer-events-none max-w-xs">
     <i data-lucide="check-circle" id="toastIcon" class="w-4 h-4 text-emerald-400 shrink-0"></i>
@@ -485,6 +454,7 @@
 
   <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
+    // URL Web App ของโรงเรียนสีชมพูศึกษา (ล็อกเป็นค่าถาวร)
     const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbzhx2nNydh-4llr-nIMzEAEIkbR5y80WU_zfY7kAYw91JklBGDwR8ahCaCns1yNUdyz-g/exec";
     
     const SUBJECT_GROUPS = [
@@ -550,18 +520,11 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initSubjectTabs();
-      loadSavedGasUrl();
       syncWithGoogleSheets(false);
     });
 
     function getGasUrl() {
-      return localStorage.getItem('school_media_gas_url') || DEFAULT_GAS_URL;
-    }
-
-    function loadSavedGasUrl() {
-      const url = getGasUrl();
-      const input = document.getElementById('gasUrlInput');
-      if (input) input.value = url;
+      return DEFAULT_GAS_URL;
     }
 
     function initSubjectTabs() {
@@ -1048,31 +1011,6 @@
 
       const creators = new Set(mediaList.map(m => m.creator.trim()).filter(Boolean));
       document.getElementById('statCreators').textContent = creators.size;
-    }
-
-    function openGasModal() {
-      loadSavedGasUrl();
-      document.getElementById('gasModal').classList.remove('hidden');
-    }
-
-    function closeGasModal() {
-      document.getElementById('gasModal').classList.add('hidden');
-    }
-
-    function saveGasSettings() {
-      const url = document.getElementById('gasUrlInput').value.trim();
-      if (!url) {
-        alert("กรุณาระบุ URL");
-        return;
-      }
-      localStorage.setItem('school_media_gas_url', url);
-      closeGasModal();
-      showToast("บันทึกการเชื่อมต่อแล้ว");
-      syncWithGoogleSheets(true);
-    }
-
-    function resetGasUrl() {
-      document.getElementById('gasUrlInput').value = DEFAULT_GAS_URL;
     }
 
     let toastTimeout;
