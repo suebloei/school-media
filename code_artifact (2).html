@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบทะเบียนสื่อการสอนและนวัตกรรมทางการศึกษา</title>
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            prompt: ['Prompt', 'sans-serif'],
+            sans: ['Sarabun', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              rose: {
+                50: '#fff1f2',
+                100: '#ffe4e6',
+                200: '#fecdd3',
+                400: '#fb7185',
+                500: '#f43f5e',
+                600: '#e11d48',
+              },
+              sage: {
+                50: '#f2f8f5',
+                100: '#e1efe8',
+                200: '#c5e0d4',
+                500: '#488b71',
+                600: '#38735c',
+                700: '#2d5b49',
+                800: '#254a3c',
+              },
+              earth: {
+                50: '#faf8f5',
+                100: '#f3efe8',
+                200: '#e5ded1',
+              }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-[#f7f9f7] text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-brand-sage-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-18 py-3">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-sage-600 via-brand-sage-500 to-brand-rose-400 flex items-center justify-center text-white shadow-md shadow-brand-sage-500/20">
+            <i data-lucide="book-marked" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg md:text-xl font-bold font-prompt text-brand-sage-800 tracking-tight">EduMedia Hub</h1>
+              <span id="connection-badge" class="text-[11px] font-medium font-prompt px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 hidden sm:inline-flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-400" id="connection-dot"></span>
+                <span id="connection-label">โหมดออฟไลน์</span>
+              </span>
+            </div>
+            <p class="text-xs text-slate-500">ระบบทะเบียนสื่อการสอนและนวัตกรรมทางการศึกษา</p>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="fetchRemoteData(true)" class="p-2 sm:px-3 sm:py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 font-prompt text-xs font-medium transition cursor-pointer inline-flex items-center gap-1.5" title="รีเฟรชข้อมูลจากคลาวด์">
+            <i data-lucide="refresh-cw" id="sync-icon" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">ซิงก์ข้อมูล</span>
+          </button>
+          
+          <button onclick="openConfigModal()" class="p-2 sm:px-3 sm:py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-prompt text-xs font-medium transition cursor-pointer inline-flex items-center gap-1.5" title="ตั้งค่าเชื่อมต่อ Google Sheets">
+            <i data-lucide="sheet" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Google Sheets</span>
+          </button>
+
+          <button onclick="openAddMediaModal()" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl bg-brand-sage-600 hover:bg-brand-sage-700 active:scale-95 text-white font-prompt text-xs sm:text-sm font-medium transition-all shadow-md shadow-brand-sage-600/25 cursor-pointer">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>ลงทะเบียนสื่อ</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+
+    <!-- KPI Dashboard Summary -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-brand-sage-100 shadow-sm hover:shadow transition-shadow">
+        <div class="flex items-center justify-between">
+          <span class="text-xs md:text-sm font-medium text-slate-500">สื่อการสอนทั้งหมด</span>
+          <div class="p-2.5 rounded-xl bg-brand-sage-50 text-brand-sage-600">
+            <i data-lucide="folder-kanban" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <p id="stat-total" class="text-2xl md:text-3xl font-bold font-prompt text-slate-800 mt-2">0</p>
+        <div class="flex items-center gap-1.5 mt-1 text-xs text-brand-sage-600 font-medium">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+          <span>พร้อมใช้งานและเผยแพร่</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-brand-sage-100 shadow-sm hover:shadow transition-shadow">
+        <div class="flex items-center justify-between">
+          <span class="text-xs md:text-sm font-medium text-slate-500">กลุ่มสาระฯ ที่มีสื่อ</span>
+          <div class="p-2.5 rounded-xl bg-brand-rose-50 text-brand-rose-500">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <p id="stat-categories" class="text-2xl md:text-3xl font-bold font-prompt text-slate-800 mt-2">0</p>
+        <p class="text-xs text-slate-400 mt-1">จากทั้งหมด 8 กลุ่มสาระฯ</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-brand-sage-100 shadow-sm hover:shadow transition-shadow">
+        <div class="flex items-center justify-between">
+          <span class="text-xs md:text-sm font-medium text-slate-500">ยอดเปิดชมตัวอย่าง</span>
+          <div class="p-2.5 rounded-xl bg-amber-50 text-amber-600">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <p id="stat-views" class="text-2xl md:text-3xl font-bold font-prompt text-slate-800 mt-2">0</p>
+        <p class="text-xs text-slate-400 mt-1">ครั้งของการเปิดดูพรีวิว</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-brand-sage-100 shadow-sm hover:shadow transition-shadow">
+        <div class="flex items-center justify-between">
+          <span class="text-xs md:text-sm font-medium text-slate-500">ดาวน์โหลด / นำไปใช้</span>
+          <div class="p-2.5 rounded-xl bg-teal-50 text-teal-600">
+            <i data-lucide="download" class="w-5 h-5"></i>
+          </div>
+        </div>
+        <p id="stat-downloads" class="text-2xl md:text-3xl font-bold font-prompt text-slate-800 mt-2">0</p>
+        <p class="text-xs text-slate-400 mt-1">ครั้งที่มีการนำสื่อไปใช้งาน</p>
+      </div>
+    </section>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="bg-white rounded-2xl p-4 md:p-5 border border-brand-sage-100 shadow-sm mb-6 space-y-4">
+      
+      <!-- Top Toolbar: Search + Secondary Dropdowns -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+        <!-- Search Field -->
+        <div class="md:col-span-6 relative">
+          <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input 
+            type="text" 
+            id="search-input"
+            placeholder="ค้นหาชื่อสื่อ, คำสำคัญ, หรือชื่อครูผู้จัดทำ..."
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-brand-sage-500 focus:ring-2 focus:ring-brand-sage-200 text-sm outline-none transition-all placeholder:text-slate-400"
+            oninput="handleSearchChange()"
+          >
+        </div>
+
+        <!-- Grade Level Filter -->
+        <div class="md:col-span-3">
+          <div class="relative">
+            <i data-lucide="graduation-cap" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <select 
+              id="filter-grade" 
+              class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-brand-sage-500 focus:ring-2 focus:ring-brand-sage-200 outline-none bg-white cursor-pointer appearance-none"
+              onchange="renderMediaGrid()"
+            >
+              <option value="ALL">ทุกระดับชั้น (ม.1 - ม.6)</option>
+              <option value="ม.1">ชั้นมัธยมศึกษาปีที่ 1</option>
+              <option value="ม.2">ชั้นมัธยมศึกษาปีที่ 2</option>
+              <option value="ม.3">ชั้นมัธยมศึกษาปีที่ 3</option>
+              <option value="ม.4">ชั้นมัธยมศึกษาปีที่ 4</option>
+              <option value="ม.5">ชั้นมัธยมศึกษาปีที่ 5</option>
+              <option value="ม.6">ชั้นมัธยมศึกษาปีที่ 6</option>
+              <option value="ทุกระดับชั้น">ทุกระดับชั้น (ทั่วไป)</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+          </div>
+        </div>
+
+        <!-- Media Type Filter -->
+        <div class="md:col-span-3">
+          <div class="relative">
+            <i data-lucide="file-type" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <select 
+              id="filter-type" 
+              class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-brand-sage-500 focus:ring-2 focus:ring-brand-sage-200 outline-none bg-white cursor-pointer appearance-none"
+              onchange="renderMediaGrid()"
+            >
+              <option value="ALL">ทุกประเภทสื่อ</option>
+              <option value="video">วิดีโอ / คลิปการสอน (Video)</option>
+              <option value="pdf">เอกสาร / ใบงาน (PDF)</option>
+              <option value="slide">สไลด์บรรยาย (Slide/PPT)</option>
+              <option value="interactive">เว็บไซต์ / สื่ออินเตอร์แอคทีฟ</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Group Category Badges (Horizontal Scroll on Mobile) -->
+      <div class="pt-2 border-t border-slate-100">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs md:text-sm font-prompt" id="subject-tab-container">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Grid Header (Result Count & Sort) -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <h2 class="text-base font-bold font-prompt text-slate-800" id="current-category-label">สื่อการสอนทั้งหมด</h2>
+        <span id="filtered-count" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-sage-100 text-brand-sage-700">0 รายการ</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-slate-500">
+        <button onclick="resetFilters()" class="text-brand-rose-500 hover:text-brand-rose-600 font-medium cursor-pointer inline-flex items-center gap-1">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          ล้างตัวกรอง
+        </button>
+      </div>
+    </div>
+
+    <!-- Media Cards Container Grid -->
+    <div id="media-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <!-- Cards rendered via JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 my-6 text-center">
+      <div class="w-16 h-16 rounded-full bg-brand-sage-50 text-brand-sage-500 flex items-center justify-center mb-3">
+        <i data-lucide="folder-search" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-bold font-prompt text-slate-700">ไม่พบสื่อการสอนตามเงื่อนไขที่ค้นหา</h3>
+      <p class="text-xs text-slate-500 max-w-sm mt-1">ลองเปลี่ยนคำค้นหา หรือเลือกกลุ่มสาระและระดับชั้นอื่นๆ</p>
+      <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-prompt text-xs font-medium cursor-pointer transition">
+        แสดงสื่อทั้งหมด
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-200 bg-white py-5 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 ระบบทะเบียนสื่อนวัตกรรมทางการศึกษา — เพื่อการจัดการเรียนรู้อย่างยั่งยืน</p>
+      <p class="text-[11px] text-slate-400">รองรับระบบตัวอย่างสื่อสด (Instant Preview)</p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Config Google Sheets Modal -->
+  <div id="config-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center py-6">
+      <div class="fixed inset-0" onclick="closeConfigModal()"></div>
+      <div class="relative bg-white rounded-3xl max-w-lg w-full p-6 text-left shadow-2xl border border-slate-100 z-10">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <i data-lucide="sheet" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold font-prompt text-slate-800">เชื่อมต่อ Google Sheets</h3>
+              <p class="text-xs text-slate-400">ใช้เป็นฐานข้อมูลกลางของโรงเรียนผ่าน Apps Script</p>
+            </div>
+          </div>
+          <button onclick="closeConfigModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Google Apps Script Web App URL</label>
+            <input 
+              type="url" 
+              id="gas-url-input" 
+              placeholder="https://script.google.com/macros/s/.../exec"
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none"
+            >
+            <p class="text-[11px] text-slate-400 mt-1">คัดลอก URL จากขั้นตอน Deployment (Web App) ของ Google Apps Script</p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
+            <p class="font-semibold text-slate-700 flex items-center gap-1">
+              <i data-lucide="info" class="w-3.5 h-3.5 text-brand-sage-600"></i> ข้อดีของการเชื่อมต่อ:
+            </p>
+            <p>• คุณครูทุกคนจะมองเห็นและแชร์สื่อร่วมกันได้แบบ Real-time</p>
+            <p>• ข้อมูลไม่หายเมื่อเปลี่ยนอุปกรณ์หรือล้างประวัติเบราว์เซอร์</p>
+            <p>• สามารถเปิดดูรายงาน สรุปกลุ่มสาระฯ ใน Google Sheets ได้โดยตรง</p>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button type="button" onclick="clearGasConfig()" class="text-xs text-rose-500 hover:text-rose-600 font-medium cursor-pointer">
+              ล้างค่าการเชื่อมต่อ (ใช้ออฟไลน์)
+            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="closeConfigModal()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                ยกเลิก
+              </button>
+              <button type="button" onclick="saveGasConfig()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-prompt text-xs font-medium shadow-md transition cursor-pointer inline-flex items-center gap-1.5">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                บันทึกการเชื่อมต่อ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Media Preview Modal -->
+  <div id="preview-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm transition-opacity">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center py-6">
+      
+      <!-- Backdrop click -->
+      <div class="fixed inset-0" onclick="closePreviewModal()"></div>
+
+      <!-- Modal Card -->
+      <div class="relative bg-white rounded-3xl max-w-4xl w-full p-4 sm:p-6 text-left shadow-2xl overflow-hidden border border-slate-100 z-10 transition-all transform scale-100 flex flex-col max-h-[92vh]">
+        
+        <!-- Header -->
+        <div class="flex items-start justify-between pb-3 border-b border-slate-100 mb-3 gap-3">
+          <div class="flex-1 pr-2">
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              <span id="pv-code" class="text-xs font-bold font-prompt px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600">MED-2026-000</span>
+              <span id="pv-subject" class="text-xs font-medium px-2.5 py-0.5 rounded-md bg-brand-sage-100 text-brand-sage-700">กลุ่มสาระฯ</span>
+              <span id="pv-grade" class="text-xs font-medium px-2.5 py-0.5 rounded-md bg-brand-rose-100 text-brand-rose-600">ระดับชั้น</span>
+            </div>
+            <h3 id="pv-title" class="text-lg sm:text-xl font-bold font-prompt text-slate-900 leading-snug line-clamp-2">ชื่อสื่อการสอน</h3>
+          </div>
+          <button onclick="closePreviewModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer flex-shrink-0">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Preview Stage Box -->
+        <div class="relative w-full aspect-video sm:h-[460px] bg-slate-900 rounded-2xl overflow-hidden flex items-center justify-center border border-slate-200 shadow-inner" id="preview-stage-container">
+          <!-- Dynamic Content (iframe / video / interactive) will be inserted here -->
+        </div>
+
+        <!-- Meta Details & Actions -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 overflow-y-auto">
+          <div>
+            <div class="flex items-center gap-3 text-xs text-slate-600">
+              <span class="inline-flex items-center gap-1 font-medium text-slate-700">
+                <i data-lucide="user-check" class="w-4 h-4 text-brand-sage-600"></i>
+                <span id="pv-creator">ครูผู้จัดทำ</span>
+              </span>
+              <span>•</span>
+              <span class="inline-flex items-center gap-1 text-slate-500">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span id="pv-date">วันที่ลงทะเบียน</span>
+              </span>
+            </div>
+            <p id="pv-description" class="text-xs text-slate-500 mt-1 max-w-xl">รายละเอียดคำอธิบายสื่อการสอนและวัตถุประสงค์ในการใช้งาน</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <button id="pv-edit-btn" onclick="handleEditFromPreview()" class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-prompt font-medium inline-flex items-center gap-1.5 transition cursor-pointer border border-amber-200">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>แก้ไขข้อมูล</span>
+            </button>
+            <a id="pv-external-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-prompt font-medium inline-flex items-center gap-1.5 transition">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>เปิดต้นฉบับ</span>
+            </a>
+            <button id="pv-download-btn" onclick="handleDownloadAction()" class="px-4 py-2 rounded-xl bg-brand-sage-600 hover:bg-brand-sage-700 text-white text-xs font-prompt font-medium inline-flex items-center gap-1.5 shadow transition cursor-pointer">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>ดาวน์โหลดเอกสาร/สื่อ</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Add / Edit Media Registration Modal -->
+  <div id="add-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center py-6">
+      
+      <!-- Backdrop -->
+      <div class="fixed inset-0" onclick="closeAddMediaModal()"></div>
+
+      <div class="relative bg-white rounded-3xl max-w-2xl w-full p-6 text-left shadow-2xl border border-slate-100 z-10">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div class="flex items-center gap-2.5">
+            <div id="modal-icon-container" class="w-9 h-9 rounded-xl bg-brand-rose-50 text-brand-rose-500 flex items-center justify-center">
+              <i id="modal-icon" data-lucide="file-plus-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 id="modal-form-title" class="text-lg font-bold font-prompt text-slate-800">ลงทะเบียนสื่อและนวัตกรรมใหม่</h3>
+              <p id="modal-form-subtitle" class="text-xs text-slate-400">กรอกข้อมูลเพื่อบันทึกสื่อเข้าระบบทะเบียนกลาง</p>
+            </div>
+          </div>
+          <button onclick="closeAddMediaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Form -->
+        <form id="media-form" onsubmit="handleMediaFormSubmit(event)" class="space-y-4">
+          <input type="hidden" id="form-mode" value="add">
+          <input type="hidden" id="form-editing-id" value="">
+          
+          <!-- Code (Auto) + Date -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">รหัสสื่อ</label>
+              <input type="text" id="form-code" readonly class="w-full px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold font-prompt text-brand-sage-700 outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">ชื่อคุณครูผู้สร้างสื่อ <span class="text-rose-500">*</span></label>
+              <input type="text" id="form-creator" required placeholder="เช่น ครูกิตติศักดิ์ พัฒนศักดิ์" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none">
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">ชื่อสื่อ / นวัตกรรมการเรียนรู้ <span class="text-rose-500">*</span></label>
+            <input type="text" id="form-title" required placeholder="เช่น ชุดกิจกรรมการเรียนรู้ เรื่อง การสังเคราะห์ด้วยแสง ม.3" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none">
+          </div>
+
+          <!-- Subject Group & Grade Level -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">กลุ่มสาระการเรียนรู้ <span class="text-rose-500">*</span></label>
+              <select id="form-subject" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none bg-white">
+                <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                <option value="ภาษาไทย">ภาษาไทย</option>
+                <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                <option value="ศิลปะ">ศิลปะ</option>
+                <option value="การงานอาชีพ">การงานอาชีพ</option>
+                <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">ระดับชั้น <span class="text-rose-500">*</span></label>
+              <select id="form-grade" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none bg-white">
+                <option value="ม.1">ชั้นมัธยมศึกษาปีที่ 1</option>
+                <option value="ม.2">ชั้นมัธยมศึกษาปีที่ 2</option>
+                <option value="ม.3">ชั้นมัธยมศึกษาปีที่ 3</option>
+                <option value="ม.4">ชั้นมัธยมศึกษาปีที่ 4</option>
+                <option value="ม.5">ชั้นมัธยมศึกษาปีที่ 5</option>
+                <option value="ม.6">ชั้นมัธยมศึกษาปีที่ 6</option>
+                <option value="ทุกระดับชั้น">ทุกระดับชั้น (ทั่วไป)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Media Type & Preview URL -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">ประเภทสื่อ <span class="text-rose-500">*</span></label>
+              <select id="form-type" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none bg-white">
+                <option value="video">วิดีโอ (Video / MP4 / YouTube)</option>
+                <option value="pdf">เอกสาร / ใบงาน (PDF)</option>
+                <option value="slide">สไลด์นำเสนอ (Slide)</option>
+                <option value="interactive">เว็บไซต์ / สื่ออินเตอร์แอคทีฟ</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-medium text-slate-600 mb-1">URL พรีวิวสื่อ หรือ ลิงก์ไฟล์ <span class="text-rose-500">*</span></label>
+              <input type="url" id="form-url" required placeholder="https://... (เช่น ลิงก์ YouTube, ลิงก์ PDF, Google Drive)" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none">
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1">คำอธิบายย่อ / วัตถุประสงค์สื่อ</label>
+            <textarea id="form-desc" rows="2" placeholder="อธิบายเนื้อหาและคำชี้แจงสำหรับนักเรียน..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-brand-sage-300 outline-none"></textarea>
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+            <button type="button" onclick="closeAddMediaModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+              ยกเลิก
+            </button>
+            <button type="submit" id="form-submit-btn" class="px-5 py-2 rounded-xl bg-brand-sage-600 hover:bg-brand-sage-700 text-white font-prompt text-xs font-medium shadow-md shadow-brand-sage-600/30 transition cursor-pointer inline-flex items-center gap-1.5">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i>
+              <span id="form-submit-text">บันทึกสื่อเข้าระบบ</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Custom Modal (Replaces browser confirm) -->
+  <div id="delete-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center py-6">
+      <div class="fixed inset-0" onclick="closeDeleteModal()"></div>
+      <div class="relative bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 z-10">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center">
+          <i data-lucide="trash-2" class="w-7 h-7"></i>
+        </div>
+        <h3 class="text-lg font-bold font-prompt text-slate-800 mb-1">ยืนยันการลบสื่อการสอน?</h3>
+        <p class="text-xs text-slate-500 mb-6" id="delete-modal-msg">คุณแน่ใจหรือไม่ว่าต้องการลบรายการสื่อนี้ ข้อมูลที่ลบจะไม่สามารถกู้คืนได้</p>
+        <div class="flex items-center justify-center gap-3">
+          <button type="button" onclick="closeDeleteModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+            ยกเลิก
+          </button>
+          <button type="button" onclick="confirmDeleteMedia()" class="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-prompt text-xs font-medium shadow-md transition cursor-pointer">
+            ลบสื่อนี้
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-900 text-white text-xs font-medium shadow-xl">
+    <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-message">บันทึกข้อมูลสำเร็จ</span>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // 8 Learning Areas + Extracurricular + ALL
+    const SUBJECT_GROUPS = [
+      { id: 'ALL', name: 'ทั้งหมด', icon: 'sparkles' },
+      { id: 'วิทยาศาสตร์และเทคโนโลยี', name: 'วิทยาศาสตร์และเทคโนโลยี', icon: 'atom' },
+      { id: 'คณิตศาสตร์', name: 'คณิตศาสตร์', icon: 'calculator' },
+      { id: 'ภาษาไทย', name: 'ภาษาไทย', icon: 'book-open' },
+      { id: 'ภาษาต่างประเทศ', name: 'ภาษาต่างประเทศ', icon: 'globe' },
+      { id: 'สังคมศึกษา ศาสนา และวัฒนธรรม', name: 'สังคมศึกษาฯ', icon: 'landmark' },
+      { id: 'สุขศึกษาและพลศึกษา', name: 'สุขศึกษาและพลศึกษา', icon: 'heart-pulse' },
+      { id: 'ศิลปะ', name: 'ศิลปะ', icon: 'palette' },
+      { id: 'การงานอาชีพ', name: 'การงานอาชีพ', icon: 'hammer' },
+      { id: 'กิจกรรมพัฒนาผู้เรียน', name: 'กิจกรรมพัฒนาผู้เรียน', icon: 'compass' }
+    ];
+
+    // Initial Mock Data (Fallback)
+    const INITIAL_MEDIA_DATA = [
+      {
+        id: 'MED-2026-001',
+        title: 'วิดีโอจำลองการแบ่งเซลล์แบบไมโทซิสและไมโอซิส (Cell Division 3D)',
+        subject: 'วิทยาศาสตร์และเทคโนโลยี',
+        grade: 'ม.3',
+        type: 'video',
+        url: 'https://www.youtube.com/embed/f-ldPgEfAHI',
+        creator: 'ครูกฤตยาพร วงศ์วิวัฒน์',
+        date: '2026-03-15',
+        description: 'ภาพเคลื่อนไหว 3 มิติเพื่อความเข้าใจการจำลองโครโมโซมและการแบ่งเซลล์สิ่งมีชีวิตอย่างละเอียด',
+        views: 284,
+        downloads: 98,
+        thumbnail: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'MED-2026-002',
+        title: 'คู่มือและแบบฝึกทักษะการแยกตัวประกอบพหุนามดีกรีสอง (PDF สรุปสูตร)',
+        subject: 'คณิตศาสตร์',
+        grade: 'ม.2',
+        type: 'pdf',
+        url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        creator: 'ครูสมคิด เจริญผล',
+        date: '2026-04-10',
+        description: 'รวมเทคนิควิธีคิดลัด สูตรกำลังสองสมบูรณ์ และแบบฝึกหัดทบทวนก่อนสอบกลางภาค',
+        views: 412,
+        downloads: 215,
+        thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'MED-2026-003',
+        title: 'สไลด์ประกอบการสอน: วรรณคดีนิราศภูเขาทองและคุณค่าทางวรรณศิลป์',
+        subject: 'ภาษาไทย',
+        grade: 'ม.1',
+        type: 'slide',
+        url: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=800&q=80',
+        creator: 'ครูปรียานุช มณีโชติ',
+        date: '2026-05-02',
+        description: 'สื่อสไลด์นำเสนอแผนที่การเดินทางของสุนทรภู่ บทวิเคราะห์ภาพพจน์ และสัมผัสคำกลอน',
+        views: 189,
+        downloads: 64,
+        thumbnail: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'MED-2026-004',
+        title: 'Interactive Web: PhET Simulation ทบทวนวงจรไฟฟ้าและความต้านทาน',
+        subject: 'วิทยาศาสตร์และเทคโนโลยี',
+        grade: 'ม.3',
+        type: 'interactive',
+        url: 'https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_en.html',
+        creator: 'ครูเอกชัย พงศ์สิริ',
+        date: '2026-06-12',
+        description: 'ห้องทดลองเสมือนจริงให้นักเรียนทดลองต่อหลอดไฟ ตัวต้านทาน และคำนวณกฎของโอห์ม',
+        views: 530,
+        downloads: 140,
+        thumbnail: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'
+      }
+    ];
+
+    // State
+    const STORAGE_KEY = 'edu_media_registry_data';
+    const GAS_URL_KEY = 'edu_media_gas_api_url';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyC3TvNUvgHXWpjEcOupbN1Cq5368REuBc_oZbcffV6LH8c0X-rdjuJqEtfxsrASWgh-Q/exec';
+    let mediaList = [];
+    let selectedSubject = 'ALL';
+    let currentPreviewItem = null;
+    let pendingDeleteId = null;
+    let gasApiUrl = localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
+
+    // Initialize Application
+    document.addEventListener('DOMContentLoaded', () => {
+      updateConnectionStatusUI();
+      loadInitialData();
+      renderSubjectTabs();
+      lucide.createIcons();
+    });
+
+    function updateConnectionStatusUI() {
+      const badge = document.getElementById('connection-badge');
+      const dot = document.getElementById('connection-dot');
+      const label = document.getElementById('connection-label');
+
+      if (!badge || !dot || !label) return;
+
+      if (gasApiUrl) {
+        badge.className = 'text-[11px] font-medium font-prompt px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 hidden sm:inline-flex items-center gap-1.5';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
+        label.textContent = 'Google Sheets Live';
+      } else {
+        badge.className = 'text-[11px] font-medium font-prompt px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 hidden sm:inline-flex items-center gap-1.5';
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
+        label.textContent = 'โหมดออฟไลน์ (Local)';
+      }
+    }
+
+    // Load data from Google Sheets or LocalStorage
+    async function loadInitialData() {
+      if (gasApiUrl) {
+        await fetchRemoteData(false);
+      } else {
+        loadLocalStorageData();
+        renderMediaGrid();
+        updateDashboardStats();
+      }
+    }
+
+    function loadLocalStorageData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          mediaList = JSON.parse(stored);
+        } else {
+          mediaList = [...INITIAL_MEDIA_DATA];
+          saveLocalStorageData();
+        }
+      } catch (e) {
+        console.warn('LocalStorage error:', e);
+        mediaList = [...INITIAL_MEDIA_DATA];
+      }
+    }
+
+    function saveLocalStorageData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mediaList));
+      } catch (e) {
+        console.warn('Unable to save to LocalStorage:', e);
+      }
+    }
+
+    // Google Apps Script API Callers
+    async function fetchRemoteData(showToastNotice = true) {
+      if (!gasApiUrl) {
+        if (showToastNotice) showToast('ยังไม่ได้ระบุ URL ของ Google Sheets');
+        openConfigModal();
+        return;
+      }
+
+      const syncIcon = document.getElementById('sync-icon');
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+
+      try {
+        const res = await fetch(gasApiUrl);
+        const result = await res.json();
+        if (result.status === 'success') {
+          mediaList = result.data.map(item => ({
+            ...item,
+            views: Number(item.views) || 0,
+            downloads: Number(item.downloads) || 0
+          }));
+          saveLocalStorageData(); // Backup cache
+          renderMediaGrid();
+          updateDashboardStats();
+          if (showToastNotice) showToast('ซิงก์ข้อมูลจาก Google Sheets สำเร็จ');
+        } else {
+          showToast('ไม่สามารถดึงข้อมูลได้: ' + (result.message || ''));
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        if (showToastNotice) showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ Google Sheets');
+      } finally {
+        if (syncIcon) syncIcon.classList.remove('animate-spin');
+      }
+    }
+
+    async function sendGasRequest(action, payload) {
+      if (!gasApiUrl) return false;
+      try {
+        const res = await fetch(gasApiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, ...payload })
+        });
+        return await res.json();
+      } catch (err) {
+        console.error('API Send Error:', err);
+        return null;
+      }
+    }
+
+    // Google Sheets Config Modal
+    function openConfigModal() {
+      document.getElementById('gas-url-input').value = gasApiUrl;
+      const modal = document.getElementById('config-modal');
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    }
+
+    function closeConfigModal() {
+      const modal = document.getElementById('config-modal');
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function saveGasConfig() {
+      const inputUrl = document.getElementById('gas-url-input').value.trim();
+      gasApiUrl = inputUrl;
+      localStorage.setItem(GAS_URL_KEY, gasApiUrl);
+      updateConnectionStatusUI();
+      closeConfigModal();
+
+      if (gasApiUrl) {
+        showToast('บันทึกการเชื่อมต่อแล้ว กำลังซิงก์ข้อมูล...');
+        fetchRemoteData(true);
+      } else {
+        showToast('ใช้งานในโหมดออฟไลน์');
+        loadLocalStorageData();
+        renderMediaGrid();
+        updateDashboardStats();
+      }
+    }
+
+    function clearGasConfig() {
+      gasApiUrl = '';
+      localStorage.removeItem(GAS_URL_KEY);
+      document.getElementById('gas-url-input').value = '';
+      updateConnectionStatusUI();
+      closeConfigModal();
+      showToast('เปลี่ยนกลับเป็นโหมดออฟไลน์แล้ว');
+      loadLocalStorageData();
+      renderMediaGrid();
+      updateDashboardStats();
+    }
+
+    // Render Subject Filter Badges
+    function renderSubjectTabs() {
+      const container = document.getElementById('subject-tab-container');
+      if (!container) return;
+
+      container.innerHTML = SUBJECT_GROUPS.map(group => {
+        const isActive = selectedSubject === group.id;
+        const activeClasses = isActive 
+          ? 'bg-brand-sage-600 text-white shadow-sm shadow-brand-sage-600/30 font-semibold' 
+          : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+        return `
+          <button 
+            type="button"
+            onclick="setSubjectFilter('${group.id}')"
+            class="px-3.5 py-1.5 rounded-xl whitespace-nowrap text-xs transition-all cursor-pointer flex items-center gap-1.5 ${activeClasses}"
+          >
+            <i data-lucide="${group.icon}" class="w-3.5 h-3.5"></i>
+            <span>${group.name}</span>
+          </button>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function setSubjectFilter(subjectId) {
+      selectedSubject = subjectId;
+      renderSubjectTabs();
+      renderMediaGrid();
+    }
+
+    function handleSearchChange() {
+      renderMediaGrid();
+    }
+
+    function resetFilters() {
+      selectedSubject = 'ALL';
+      document.getElementById('search-input').value = '';
+      document.getElementById('filter-grade').value = 'ALL';
+      document.getElementById('filter-type').value = 'ALL';
+      renderSubjectTabs();
+      renderMediaGrid();
+      showToast('รีเซ็ตตัวกรองเรียบร้อย');
+    }
+
+    // Filter Logic
+    function getFilteredMedia() {
+      const searchKeyword = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+      const gradeFilter = document.getElementById('filter-grade')?.value || 'ALL';
+      const typeFilter = document.getElementById('filter-type')?.value || 'ALL';
+
+      return mediaList.filter(item => {
+        if (selectedSubject !== 'ALL' && item.subject !== selectedSubject) return false;
+        if (gradeFilter !== 'ALL' && item.grade !== gradeFilter) return false;
+        if (typeFilter !== 'ALL' && item.type !== typeFilter) return false;
+        if (searchKeyword) {
+          const matchTitle = (item.title || '').toLowerCase().includes(searchKeyword);
+          const matchCreator = (item.creator || '').toLowerCase().includes(searchKeyword);
+          const matchCode = (item.id || '').toLowerCase().includes(searchKeyword);
+          const matchDesc = (item.description || '').toLowerCase().includes(searchKeyword);
+          if (!matchTitle && !matchCreator && !matchCode && !matchDesc) return false;
+        }
+        return true;
+      });
+    }
+
+    // Render Grid Cards
+    function renderMediaGrid() {
+      const grid = document.getElementById('media-grid');
+      const emptyState = document.getElementById('empty-state');
+      const filteredCountEl = document.getElementById('filtered-count');
+      const categoryLabelEl = document.getElementById('current-category-label');
+
+      if (!grid) return;
+
+      const filtered = getFilteredMedia();
+
+      filteredCountEl.textContent = `${filtered.length} รายการ`;
+      const currentGroupObj = SUBJECT_GROUPS.find(g => g.id === selectedSubject);
+      categoryLabelEl.textContent = currentGroupObj ? currentGroupObj.name : 'สื่อการสอนทั้งหมด';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+
+      grid.innerHTML = filtered.map(item => {
+        const typeBadge = getTypeBadge(item.type);
+        const fallbackThumb = getFallbackThumb(item.type);
+        const displayThumb = item.thumbnail || fallbackThumb;
+
+        return `
+          <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
+            <div class="relative aspect-video w-full overflow-hidden bg-slate-100 cursor-pointer" onclick="openPreviewModal('${item.id}')">
+              <img 
+                src="${displayThumb}" 
+                alt="${item.title}" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onerror="this.onerror=null; this.src='https://placehold.co/600x340/e2e8f0/475569?text=Media+Preview';"
+              >
+              <div class="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="px-3.5 py-1.5 rounded-full bg-white/95 text-slate-800 text-xs font-semibold font-prompt shadow-md flex items-center gap-1.5 transform scale-90 group-hover:scale-100 transition-transform">
+                  <i data-lucide="play-circle" class="w-4 h-4 text-brand-sage-600"></i>
+                  เปิดดูตัวอย่าง
+                </span>
+              </div>
+              <div class="absolute top-2.5 left-2.5">
+                ${typeBadge}
+              </div>
+              <span class="absolute top-2.5 right-2.5 text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-white font-prompt">
+                ${item.grade}
+              </span>
+            </div>
+
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-prompt mb-1.5">
+                  <span class="font-bold text-brand-sage-700">${item.id}</span>
+                  <span>•</span>
+                  <span class="text-slate-500 truncate max-w-[170px]">${item.subject}</span>
+                </div>
+                <h3 class="text-sm font-semibold font-prompt text-slate-800 line-clamp-2 hover:text-brand-sage-700 transition cursor-pointer" onclick="openPreviewModal('${item.id}')">
+                  ${item.title}
+                </h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1.5">
+                  ${item.description || 'ไม่มีคำอธิบายเพิ่มเติม'}
+                </p>
+              </div>
+
+              <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-1.5 text-slate-600 truncate max-w-[130px]">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  <span class="truncate text-[11px] font-medium">${item.creator}</span>
+                </div>
+                <div class="flex items-center gap-0.5">
+                  <button 
+                    onclick="openEditMediaModal('${item.id}', event)"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition cursor-pointer" 
+                    title="แก้ไขข้อมูลสื่อนี้"
+                  >
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                  </button>
+                  <button 
+                    onclick="openDeleteModal('${item.id}', event)"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer" 
+                    title="ลบสื่อนี้"
+                  >
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                  <button 
+                    onclick="openPreviewModal('${item.id}')"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-brand-sage-600 hover:bg-brand-sage-50 transition cursor-pointer" 
+                    title="เปิดดูตัวอย่างสื่อ"
+                  >
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                  <button 
+                    onclick="handleQuickDownload('${item.id}')"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-brand-sage-600 hover:bg-brand-sage-50 transition cursor-pointer" 
+                    title="ดาวน์โหลด / เปิดลิงก์"
+                  >
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function getTypeBadge(type) {
+      switch (type) {
+        case 'video':
+          return `<span class="px-2 py-0.5 rounded-lg bg-rose-500 text-white text-[11px] font-medium font-prompt flex items-center gap-1 shadow-sm"><i data-lucide="video" class="w-3 h-3"></i> วิดีโอ</span>`;
+        case 'pdf':
+          return `<span class="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[11px] font-medium font-prompt flex items-center gap-1 shadow-sm"><i data-lucide="file-text" class="w-3 h-3"></i> เอกสาร PDF</span>`;
+        case 'slide':
+          return `<span class="px-2 py-0.5 rounded-lg bg-blue-500 text-white text-[11px] font-medium font-prompt flex items-center gap-1 shadow-sm"><i data-lucide="presentation" class="w-3 h-3"></i> สไลด์</span>`;
+        case 'interactive':
+          return `<span class="px-2 py-0.5 rounded-lg bg-emerald-500 text-white text-[11px] font-medium font-prompt flex items-center gap-1 shadow-sm"><i data-lucide="sparkles" class="w-3 h-3"></i> สื่ออินเตอร์แอคทีฟ</span>`;
+        default:
+          return `<span class="px-2 py-0.5 rounded-lg bg-slate-600 text-white text-[11px] font-medium font-prompt flex items-center gap-1 shadow-sm"><i data-lucide="file" class="w-3 h-3"></i> ทั่วไป</span>`;
+      }
+    }
+
+    function getFallbackThumb(type) {
+      switch (type) {
+        case 'video': return 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80';
+        case 'pdf': return 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80';
+        case 'slide': return 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=600&q=80';
+        default: return 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80';
+      }
+    }
+
+    function updateDashboardStats() {
+      const totalCount = mediaList.length;
+      const uniqueSubjects = new Set(mediaList.map(m => m.subject)).size;
+      const totalViews = mediaList.reduce((acc, curr) => acc + (Number(curr.views) || 0), 0);
+      const totalDownloads = mediaList.reduce((acc, curr) => acc + (Number(curr.downloads) || 0), 0);
+
+      document.getElementById('stat-total').textContent = totalCount.toLocaleString();
+      document.getElementById('stat-categories').textContent = uniqueSubjects;
+      document.getElementById('stat-views').textContent = totalViews.toLocaleString();
+      document.getElementById('stat-downloads').textContent = totalDownloads.toLocaleString();
+    }
+
+    // ================== PREVIEW MODAL LOGIC ==================
+    function openPreviewModal(mediaId) {
+      const item = mediaList.find(m => m.id === mediaId);
+      if (!item) return;
+
+      currentPreviewItem = item;
+
+      // Increment view count locally & remotely
+      item.views = (Number(item.views) || 0) + 1;
+      saveLocalStorageData();
+      updateDashboardStats();
+      if (gasApiUrl) {
+        sendGasRequest('increment', { id: item.id, field: 'views' });
+      }
+
+      document.getElementById('pv-code').textContent = item.id;
+      document.getElementById('pv-title').textContent = item.title;
+      document.getElementById('pv-subject').textContent = item.subject;
+      document.getElementById('pv-grade').textContent = item.grade;
+      document.getElementById('pv-creator').textContent = item.creator;
+      document.getElementById('pv-date').textContent = item.date;
+      document.getElementById('pv-description').textContent = item.description || 'ไม่มีคำอธิบายเพิ่มเติมสำหรับสื่อนี้';
+      document.getElementById('pv-external-btn').href = item.url;
+
+      const stage = document.getElementById('preview-stage-container');
+      stage.innerHTML = generatePreviewPlayerHtml(item);
+
+      const modal = document.getElementById('preview-modal');
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    }
+
+    function closePreviewModal() {
+      const modal = document.getElementById('preview-modal');
+      const stage = document.getElementById('preview-stage-container');
+      modal.classList.add('hidden');
+      stage.innerHTML = '';
+      currentPreviewItem = null;
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function generatePreviewPlayerHtml(item) {
+      const url = item.url || '';
+
+      function extractYouTubeId(rawUrl) {
+        if (!rawUrl) return null;
+        const regExp = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = rawUrl.match(regExp);
+        return match ? match[1] : null;
+      }
+
+      // YouTube Video Preview
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const videoId = extractYouTubeId(url);
+        if (videoId) {
+          const directWatchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+          const maxResThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          const hqThumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+          return `
+            <div class="relative w-full h-full flex flex-col items-center justify-center bg-slate-950 overflow-hidden group">
+              <img 
+                src="${maxResThumb}" 
+                onerror="this.onerror=null; this.src='${hqThumb}';" 
+                alt="${item.title}" 
+                class="absolute inset-0 w-full h-full object-cover opacity-60 filter blur-[1px] group-hover:scale-105 group-hover:opacity-75 transition-all duration-700"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+
+              <div class="absolute top-4 left-4 right-4 flex items-center justify-between text-white z-10">
+                <div class="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs border border-white/10">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
+                  <span class="font-medium text-slate-200">YouTube Video Preview</span>
+                </div>
+                <span class="text-[11px] text-slate-300 bg-white/10 px-2.5 py-1 rounded-full backdrop-blur-sm hidden sm:inline-block">
+                  วิดีโอคุณภาพสูง (HD)
+                </span>
+              </div>
+
+              <div class="relative z-10 flex flex-col items-center text-center p-6 max-w-lg">
+                <a 
+                  href="${directWatchUrl}" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="group/btn relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-2xl shadow-red-600/50 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer mb-4"
+                  title="คลิกเพื่อเริ่มเล่นวิดีโอ"
+                >
+                  <i data-lucide="play" class="w-9 h-9 sm:w-11 sm:h-11 translate-x-0.5 fill-white"></i>
+                  <span class="absolute -inset-2 rounded-full border-2 border-red-500/50 animate-ping opacity-75 pointer-events-none"></span>
+                </a>
+
+                <h4 class="text-white font-prompt font-semibold text-base sm:text-lg line-clamp-2 drop-shadow-md">
+                  ${item.title}
+                </h4>
+                <p class="text-slate-300 text-xs mt-1.5 line-clamp-1 drop-shadow">
+                  จัดทำโดย: ${item.creator} • ${item.grade}
+                </p>
+
+                <div class="flex items-center gap-2.5 mt-5">
+                  <a 
+                    href="${directWatchUrl}" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-prompt text-xs font-semibold inline-flex items-center gap-2 shadow-lg transition active:scale-95"
+                  >
+                    <i data-lucide="external-link" class="w-4 h-4 text-red-600"></i>
+                    <span>เล่นวิดีโอบน YouTube ทันที</span>
+                  </a>
+                  <button 
+                    type="button" 
+                    onclick="openYouTubePopup('${videoId}')" 
+                    class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white backdrop-blur font-prompt text-xs font-medium inline-flex items-center gap-1.5 border border-white/20 transition cursor-pointer"
+                  >
+                    <i data-lucide="picture-in-picture-2" class="w-4 h-4"></i>
+                    <span>โหมดหน้าต่างลอย (Popup)</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="absolute bottom-3 text-slate-400 text-[11px] flex items-center gap-1.5 z-10">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>เล่นได้อย่างราบรื่น 100% ปลอดภัยและรองรับทุกอุปกรณ์</span>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Google Drive Preview
+      if (url.includes('drive.google.com')) {
+        let driveEmbed = url;
+        if (url.includes('/view')) {
+          driveEmbed = url.replace('/view', '/preview');
+        } else if (!url.includes('/preview')) {
+          driveEmbed = url + '/preview';
+        }
+        return `
+          <iframe 
+            src="${driveEmbed}" 
+            class="w-full h-full border-0 bg-white" 
+            allow="autoplay">
+          </iframe>
+        `;
+      }
+
+      // Direct PDF
+      if (url.toLowerCase().endsWith('.pdf') || item.type === 'pdf') {
+        return `
+          <iframe 
+            src="${url}#toolbar=1" 
+            class="w-full h-full border-0 bg-slate-800"
+            onerror="this.outerHTML='<div class=\\'text-white text-center p-6\\'>ไม่สามารถโหลดพรีวิว PDF ได้โดยตรง <br><a href=\\'${url}\\' target=\\'_blank\\' class=\\'text-brand-sage-300 underline mt-2 inline-block\\'>คลิกที่นี่เพื่อเปิดดูไฟล์</a></div>';"
+          >
+          </iframe>
+        `;
+      }
+
+      // Image Slide
+      if (item.type === 'slide' && (url.match(/\.(jpeg|jpg|gif|png|webp)/i) || !url.startsWith('http'))) {
+        return `
+          <div class="w-full h-full flex items-center justify-center bg-slate-900 p-2">
+            <img src="${url}" alt="${item.title}" class="max-h-full max-w-full object-contain rounded-lg shadow-lg">
+          </div>
+        `;
+      }
+
+      // General Web / PhET
+      return `
+        <div class="relative w-full h-full">
+          <iframe 
+            src="${url}" 
+            class="w-full h-full border-0 bg-white"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          >
+          </iframe>
+          <div class="absolute bottom-2 right-2 bg-slate-900/80 text-white text-[11px] px-2.5 py-1 rounded-lg backdrop-blur pointer-events-none">
+            Interactive View
+          </div>
+        </div>
+      `;
+    }
+
+    function openYouTubePopup(videoId) {
+      const url = `https://www.youtube.com/watch?v=${videoId}`;
+      const width = 854;
+      const height = 480;
+      const left = (screen.width - width) / 2;
+      const top = (screen.height - height) / 2;
+      window.open(url, 'EduMediaYouTubePopup', `width=${width},height=${height},top=${top},left=${left},toolbar=no,menubar=no,scrollbars=no,resizable=yes`);
+    }
+
+    function handleDownloadAction() {
+      if (!currentPreviewItem) return;
+      currentPreviewItem.downloads = (Number(currentPreviewItem.downloads) || 0) + 1;
+      saveLocalStorageData();
+      updateDashboardStats();
+      if (gasApiUrl) {
+        sendGasRequest('increment', { id: currentPreviewItem.id, field: 'downloads' });
+      }
+      showToast('เปิดลิงก์สื่อการสอนแล้ว');
+      window.open(currentPreviewItem.url, '_blank', 'noopener,noreferrer');
+    }
+
+    function handleQuickDownload(id) {
+      const item = mediaList.find(m => m.id === id);
+      if (!item) return;
+      item.downloads = (Number(item.downloads) || 0) + 1;
+      saveLocalStorageData();
+      updateDashboardStats();
+      if (gasApiUrl) {
+        sendGasRequest('increment', { id: item.id, field: 'downloads' });
+      }
+      showToast('เปิดลิงก์สื่อการสอนแล้ว');
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+    }
+
+    // ================== ADD / EDIT MODAL LOGIC ==================
+    function generateNextMediaCode() {
+      const year = new Date().getFullYear();
+      const count = mediaList.length + 1;
+      return `MED-${year}-${String(count).padStart(3, '0')}`;
+    }
+
+    function openAddMediaModal() {
+      document.getElementById('form-mode').value = 'add';
+      document.getElementById('form-editing-id').value = '';
+      document.getElementById('media-form').reset();
+      document.getElementById('form-code').value = generateNextMediaCode();
+      
+      document.getElementById('modal-form-title').textContent = 'ลงทะเบียนสื่อและนวัตกรรมใหม่';
+      document.getElementById('modal-form-subtitle').textContent = 'กรอกข้อมูลเพื่อบันทึกสื่อเข้าระบบทะเบียนกลาง';
+      document.getElementById('form-submit-text').textContent = 'บันทึกสื่อเข้าระบบ';
+      
+      const iconContainer = document.getElementById('modal-icon-container');
+      iconContainer.className = 'w-9 h-9 rounded-xl bg-brand-rose-50 text-brand-rose-500 flex items-center justify-center';
+      iconContainer.innerHTML = '<i data-lucide="file-plus-2" class="w-5 h-5"></i>';
+
+      const modal = document.getElementById('add-modal');
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    }
+
+    function openEditMediaModal(mediaId, event) {
+      if (event) event.stopPropagation();
+      const item = mediaList.find(m => m.id === mediaId);
+      if (!item) return;
+
+      document.getElementById('form-mode').value = 'edit';
+      document.getElementById('form-editing-id').value = item.id;
+      
+      document.getElementById('form-code').value = item.id;
+      document.getElementById('form-creator').value = item.creator || '';
+      document.getElementById('form-title').value = item.title || '';
+      document.getElementById('form-subject').value = item.subject || 'วิทยาศาสตร์และเทคโนโลยี';
+      document.getElementById('form-grade').value = item.grade || 'ม.1';
+      document.getElementById('form-type').value = item.type || 'video';
+      document.getElementById('form-url').value = item.url || '';
+      document.getElementById('form-desc').value = item.description || '';
+
+      document.getElementById('modal-form-title').textContent = `แก้ไขข้อมูลสื่อ: ${item.id}`;
+      document.getElementById('modal-form-subtitle').textContent = 'ปรับปรุงรายละเอียดและลิงก์ของสื่อการสอนนี้';
+      document.getElementById('form-submit-text').textContent = 'บันทึกการแก้ไข';
+      
+      const iconContainer = document.getElementById('modal-icon-container');
+      iconContainer.className = 'w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center';
+      iconContainer.innerHTML = '<i data-lucide="edit-3" class="w-5 h-5"></i>';
+
+      const modal = document.getElementById('add-modal');
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    }
+
+    function handleEditFromPreview() {
+      if (!currentPreviewItem) return;
+      const idToEdit = currentPreviewItem.id;
+      closePreviewModal();
+      openEditMediaModal(idToEdit);
+    }
+
+    function closeAddMediaModal() {
+      const modal = document.getElementById('add-modal');
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    async function handleMediaFormSubmit(event) {
+      event.preventDefault();
+
+      const mode = document.getElementById('form-mode').value;
+      const mediaType = document.getElementById('form-type').value;
+      const mediaUrl = document.getElementById('form-url').value.trim();
+
+      let itemThumbnail = getFallbackThumb(mediaType);
+      if (mediaType === 'video') {
+        const regExp = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = mediaUrl.match(regExp);
+        if (match && match[1]) {
+          itemThumbnail = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+        }
+      }
+
+      const submitBtn = document.getElementById('form-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75');
+
+      if (mode === 'edit') {
+        const editingId = document.getElementById('form-editing-id').value;
+        const targetIndex = mediaList.findIndex(m => m.id === editingId);
+        
+        if (targetIndex !== -1) {
+          const updatedItem = {
+            ...mediaList[targetIndex],
+            title: document.getElementById('form-title').value.trim(),
+            creator: document.getElementById('form-creator').value.trim(),
+            subject: document.getElementById('form-subject').value,
+            grade: document.getElementById('form-grade').value,
+            type: mediaType,
+            url: mediaUrl,
+            description: document.getElementById('form-desc').value.trim(),
+            thumbnail: itemThumbnail
+          };
+
+          mediaList[targetIndex] = updatedItem;
+          saveLocalStorageData();
+          renderMediaGrid();
+          updateDashboardStats();
+
+          // Sync with Google Sheets
+          if (gasApiUrl) {
+            sendGasRequest('update', { data: updatedItem });
+          }
+
+          closeAddMediaModal();
+          showToast(`บันทึกการแก้ไขสื่อ ${editingId} เรียบร้อยแล้ว`);
+        }
+      } else {
+        // Create new
+        const newMedia = {
+          id: document.getElementById('form-code').value || generateNextMediaCode(),
+          title: document.getElementById('form-title').value.trim(),
+          creator: document.getElementById('form-creator').value.trim(),
+          subject: document.getElementById('form-subject').value,
+          grade: document.getElementById('form-grade').value,
+          type: mediaType,
+          url: mediaUrl,
+          description: document.getElementById('form-desc').value.trim(),
+          date: new Date().toISOString().split('T')[0],
+          views: 0,
+          downloads: 0,
+          thumbnail: itemThumbnail
+        };
+
+        mediaList.unshift(newMedia);
+        saveLocalStorageData();
+        renderMediaGrid();
+        updateDashboardStats();
+
+        // Sync with Google Sheets
+        if (gasApiUrl) {
+          sendGasRequest('create', { data: newMedia });
+        }
+
+        closeAddMediaModal();
+        showToast('ลงทะเบียนสื่อและนวัตกรรมใหม่เรียบร้อยแล้ว');
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-75');
+    }
+
+    // ================== DELETE MODAL LOGIC ==================
+    function openDeleteModal(mediaId, event) {
+      if (event) event.stopPropagation();
+      pendingDeleteId = mediaId;
+      const item = mediaList.find(m => m.id === mediaId);
+      const title = item ? item.title : '';
+      document.getElementById('delete-modal-msg').textContent = `คุณแน่ใจหรือไม่ว่าต้องการลบ "${title}" (${mediaId})?`;
+      
+      const modal = document.getElementById('delete-modal');
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    }
+
+    function closeDeleteModal() {
+      const modal = document.getElementById('delete-modal');
+      modal.classList.add('hidden');
+      pendingDeleteId = null;
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    async function confirmDeleteMedia() {
+      if (!pendingDeleteId) return;
+      const targetId = pendingDeleteId;
+
+      mediaList = mediaList.filter(m => m.id !== targetId);
+      saveLocalStorageData();
+      closeDeleteModal();
+      renderMediaGrid();
+      updateDashboardStats();
+
+      // Sync with Google Sheets
+      if (gasApiUrl) {
+        sendGasRequest('delete', { id: targetId });
+      }
+
+      showToast('ลบรายการสื่อเรียบร้อยแล้ว');
+    }
+
+    // ================== TOAST NOTIFICATION ==================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      if (!toast || !msgEl) return;
+
+      msgEl.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
